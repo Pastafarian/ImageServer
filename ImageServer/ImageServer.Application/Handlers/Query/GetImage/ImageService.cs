@@ -2,13 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ImageServer.Application.Extensions;
-using ImageServer.Application.Requests;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
 namespace ImageServer.Application.Handlers.Query.GetImage
 {
-    public class GetImageService : IGetImageService
+    public class ImageService : IImageService
     {
         public bool FileExists(string filePath)
         {
@@ -29,7 +28,6 @@ namespace ImageServer.Application.Handlers.Query.GetImage
 
             image.Mutate(x => x.ApplyScalingWaterMark(queryRequest.WaterMark, Color.Black));
         }
-
 
         public void ConstrainSize(Image image, GetImageRequest request)
         {

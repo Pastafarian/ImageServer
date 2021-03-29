@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using ImageServer.Application.Config;
 using ImageServer.Application.Enums;
 using ImageServer.Application.Handlers.Query.GetImage;
-using ImageServer.Application.Handlers.Query.GetImage.ImageSavingStrategy;
-using ImageServer.Application.Requests;
 using Moq;
 using Xunit;
 
@@ -13,23 +11,27 @@ namespace ImageServer.Api.UnitTests
 {
     public class GetImageTests
     {
-        private GetImage.Handler _sut;
-        private Mock<IGetImageService> _mockImageService;
-        private Mock<IImageSavingStrategy> _mockImageSavingStrategy;
+        private readonly GetImage.Handler _sut;
+        private readonly Mock<IImageService> _mockImageService;
+        private readonly Mock<IImageCachingService> _mockImageCachingService;
+        private readonly Mock<IImageProcessor> _mockImageProcessor;
 
         public GetImageTests()
         {
             var appSettings = new AppSettings();
 
-            _mockImageService = new Mock<IGetImageService>();
+            _mockImageService = new Mock<IImageService>();
             _mockImageService.Setup(x => x.FileExists(It.IsAny<string>())).Returns(true);
-            _mockImageSavingStrategy = new Mock<IImageSavingStrategy>();
-            
-            _sut = new GetImage.Handler(appSettings, new GetImageRequestValidator(), _mockImageService.Object, _mockImageSavingStrategy.Object);
+            _mockImageCachingService = new Mock<IImageCachingService>();
+            _mockImageProcessor = new Mock<IImageProcessor>();
+            _mockImageProcessor.Setup(x =>
+                    x.GetProcessedImage(It.IsAny<GetImageRequest>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new ImageResponse()));
+
+            _sut = new GetImage.Handler(appSettings, new GetImageRequestValidator(), _mockImageService.Object, _mockImageCachingService.Object, _mockImageProcessor.Object);
         }
 
         [Theory]
-
         [InlineData("imagefile.png", null, null, "#000000", false)] // Fails if neight max width or max height set (resolution required from spec)
         [InlineData("imagefile.png", 100, -1, "#000000", false)] // Max height must be greater than 0
         [InlineData("imagefile.png", -1, 100, "#000000", false)] // Max width must be greater than 0
@@ -78,8 +80,8 @@ namespace ImageServer.Api.UnitTests
         {
             // Arrange
             var request = GetValidRequest();
-            _mockImageService.Setup(x => x.LoadImage(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws(new Exception());
-
+            _mockImageProcessor.Setup(x => x.GetProcessedImage(It.IsAny<GetImageRequest>(), It.IsAny<CancellationToken>())).Throws(new Exception());
+            
             // Act
             var result = await _sut.Handle(new GetImage.Query(request), CancellationToken.None);
 

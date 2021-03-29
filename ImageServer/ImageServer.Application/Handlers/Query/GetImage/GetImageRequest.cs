@@ -1,6 +1,6 @@
 ﻿using ImageServer.Application.Enums;
 
-namespace ImageServer.Application.Requests
+namespace ImageServer.Application.Handlers.Query.GetImage
 {
     public record GetImageRequest
     {
@@ -15,5 +15,6 @@ namespace ImageServer.Application.Requests
         {
             return !string.IsNullOrWhiteSpace(WaterMark);
         }
+
     }
 }

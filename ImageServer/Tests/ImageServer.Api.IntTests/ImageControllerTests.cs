@@ -6,7 +6,6 @@ using ImageServer.Application.Config;
 using ImageServer.Application.Enums;
 using ImageServer.Application.Handlers.Query.GetImage;
 using ImageServer.Application.Handlers.Query.GetImage.ImageSavingStrategy;
-using ImageServer.Application.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,15 +24,18 @@ namespace ImageServer.Api.IntTests
 
             var appSettings = new AppSettings
             {
-                ProductImagesPath = @"C:\Git\ImageServer\ImageServer\ImageServer.Application\product_images\"
+                ProductImagesPath = @"C:\Assets\product_images\\"
             };
 
             serviceCollection.AddSingleton(appSettings);
             serviceCollection.AddMediatR(typeof(GetImage));
-            serviceCollection.AddScoped<IGetImageService, GetImageService>();
+            serviceCollection.AddMemoryCache();
+            serviceCollection.AddScoped<IImageService, ImageService>();
+            serviceCollection.AddScoped<IImageCachingService, ImageCachingService>();
             serviceCollection.AddScoped<IImageSavingStrategy, ImageSavingStrategy>();
             serviceCollection.AddScoped<IImageSaver, JpgSaver>();
             serviceCollection.AddScoped<IImageSaver, PngSaver>();
+            serviceCollection.AddScoped<IImageProcessor, ImageProcessor>();
             serviceCollection.AddScoped<GetImageRequestValidator, GetImageRequestValidator>();
             var serviceProvider = serviceCollection.BuildServiceProvider();
 

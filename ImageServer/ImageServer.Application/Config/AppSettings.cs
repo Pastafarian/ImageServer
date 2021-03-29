@@ -3,5 +3,6 @@
     public class AppSettings
     {
         public string ProductImagesPath { get; set; }
+        public long MaximumCacheSizeInKb { get; set; }
     }
 }

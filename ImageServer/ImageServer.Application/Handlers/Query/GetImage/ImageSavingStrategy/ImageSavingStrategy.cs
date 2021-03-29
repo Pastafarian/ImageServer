@@ -17,7 +17,7 @@ namespace ImageServer.Application.Handlers.Query.GetImage.ImageSavingStrategy
             _imageSavers = imageSavers;
         }
 
-        public Task<byte[]> SaveImage(Image image, ImageFileType imageFileType, CancellationToken cancellationToken)
+        public Task<(byte[] content, string contentType)> SaveImage(Image image, ImageFileType imageFileType, CancellationToken cancellationToken)
         {
             var imageSaver = _imageSavers.SingleOrDefault(x => x.ImageFileType(imageFileType));
 

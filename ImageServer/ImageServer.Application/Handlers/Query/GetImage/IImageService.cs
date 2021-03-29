@@ -1,11 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ImageServer.Application.Requests;
 using SixLabors.ImageSharp;
 
 namespace ImageServer.Application.Handlers.Query.GetImage
 {
-    public interface IGetImageService
+    public interface IImageService
     {
         bool FileExists(string filePath);
         void ConstrainSize(Image image, GetImageRequest request);

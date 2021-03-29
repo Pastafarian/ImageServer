@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using ImageServer.Application.Handlers.Query.GetImage;
-using ImageServer.Application.Requests;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ImageServer.Api.Controllers
 {
@@ -31,7 +30,7 @@ namespace ImageServer.Api.Controllers
             if (result.ResponseType == ResponseType.ServerError) 
                 return StatusCode(500);
 
-            return File(result.Content,"image/png");
+            return File(result.Content, result.ContentType);
         }
     }
 }

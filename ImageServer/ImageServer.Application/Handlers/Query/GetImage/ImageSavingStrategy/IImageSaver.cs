@@ -7,7 +7,7 @@ namespace ImageServer.Application.Handlers.Query.GetImage.ImageSavingStrategy
 {
     public interface IImageSaver
     {
-        Task<byte[]> SaveImage(Image image, CancellationToken cancellationToken);
+        Task<(byte[] content, string contentType)> SaveImage(Image image, CancellationToken cancellationToken);
 
         bool ImageFileType(ImageFileType imageFileType);
     }

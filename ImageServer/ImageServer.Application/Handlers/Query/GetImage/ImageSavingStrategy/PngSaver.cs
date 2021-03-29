@@ -8,7 +8,7 @@ namespace ImageServer.Application.Handlers.Query.GetImage.ImageSavingStrategy
 {
     public class PngSaver : IImageSaver
     {
-        public async Task<byte[]> SaveImage(Image image, CancellationToken cancellationToken)
+        public async Task<(byte[] content, string contentType)> SaveImage(Image image, CancellationToken cancellationToken)
         {
             await using var memoryStream = new MemoryStream();
             await image.SaveAsPngAsync(memoryStream, cancellationToken);
@@ -16,7 +16,7 @@ namespace ImageServer.Application.Handlers.Query.GetImage.ImageSavingStrategy
 
             var imageBytes = memoryStream.ToArray();
 
-            return imageBytes;
+            return (imageBytes, "image/png");
         }
 
         public bool ImageFileType(ImageFileType imageFileType)

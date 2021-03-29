@@ -9,7 +9,7 @@ namespace ImageServer.Application.Handlers.Query.GetImage.ImageSavingStrategy
 {
     public class JpgSaver : IImageSaver
     {
-        public async Task<byte[]> SaveImage(Image image, CancellationToken cancellationToken)
+        public async Task<(byte[] content, string contentType)> SaveImage(Image image, CancellationToken cancellationToken)
         {
             await using var memoryStream = new MemoryStream();
             await image.SaveAsJpegAsync(memoryStream, new JpegEncoder { Quality = 90, Subsample = JpegSubsample.Ratio444 }, cancellationToken);
@@ -17,7 +17,7 @@ namespace ImageServer.Application.Handlers.Query.GetImage.ImageSavingStrategy
 
             var imageBytes = memoryStream.ToArray();
 
-            return imageBytes;
+            return (imageBytes, "image/jpeg");
         }
 
         public bool ImageFileType(ImageFileType imageFileType)

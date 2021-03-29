@@ -1,13 +1,14 @@
+using System.Text.Json.Serialization;
 using ImageServer.Application.Config;
+using ImageServer.Application.Handlers.Query.GetImage;
+using ImageServer.Application.Handlers.Query.GetImage.ImageSavingStrategy;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using ImageServer.Application.Handlers.Query.GetImage;
-using ImageServer.Application.Handlers.Query.GetImage.ImageSavingStrategy;
-using MediatR;
 
 namespace ImageServer.Api
 {
@@ -20,27 +21,36 @@ namespace ImageServer.Api
 
         public IConfiguration Configuration { get; }
 
-        //https://adamstorr.azurewebsites.net/blog/aspnetcore-and-the-strategy-pattern
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
+
             services.AddMediatR(typeof(GetImage));
-            services.AddControllers();
+            services.AddMemoryCache(options =>
+            {
+                options.CompactionPercentage = 0.1d;
+                options.SizeLimit = appSettings.MaximumCacheSizeInKb;
+            });
+
+            services.AddControllers().AddJsonOptions(options =>
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ImageServer.Api", Version = "v1" });
             });
 
-            //https://adamstorr.azurewebsites.net/blog/aspnetcore-and-the-strategy-pattern
+        
             services.AddSingleton(Configuration.GetSection("AppSettings").Get<AppSettings>());
-            services.AddScoped<IGetImageService, GetImageService>();
+            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IImageCachingService, ImageCachingService>();
             services.AddScoped<IImageSavingStrategy, ImageSavingStrategy>();
             services.AddScoped<IImageSaver, JpgSaver>();
             services.AddScoped<IImageSaver, PngSaver>();
+            services.AddScoped<IImageProcessor, ImageProcessor>();
             services.AddScoped<GetImageRequestValidator, GetImageRequestValidator>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

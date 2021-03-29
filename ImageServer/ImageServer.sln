@@ -11,7 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E6A5DC8C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageServer.Api.IntTests", "Tests\ImageServer.Api.IntTests\ImageServer.Api.IntTests.csproj", "{1D097AF9-90D7-47D2-90E1-8E50034D3755}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageServer.Api.UnitTests", "Tests\ImageServer.Api.UnitTests\ImageServer.Api.UnitTests.csproj", "{24B60DFD-2A61-4A30-81CB-8F0550FC667F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageServer.Api.UnitTests", "Tests\ImageServer.Api.UnitTests\ImageServer.Api.UnitTests.csproj", "{24B60DFD-2A61-4A30-81CB-8F0550FC667F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoadTest", "Tests\LoadTest\LoadTest.csproj", "{18A6A632-F8C3-4BD7-8BCF-00E84866A1BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{24B60DFD-2A61-4A30-81CB-8F0550FC667F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24B60DFD-2A61-4A30-81CB-8F0550FC667F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24B60DFD-2A61-4A30-81CB-8F0550FC667F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18A6A632-F8C3-4BD7-8BCF-00E84866A1BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18A6A632-F8C3-4BD7-8BCF-00E84866A1BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18A6A632-F8C3-4BD7-8BCF-00E84866A1BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18A6A632-F8C3-4BD7-8BCF-00E84866A1BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,6 +48,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{1D097AF9-90D7-47D2-90E1-8E50034D3755} = {E6A5DC8C-9D16-4988-A806-8FD82A20EAF4}
 		{24B60DFD-2A61-4A30-81CB-8F0550FC667F} = {E6A5DC8C-9D16-4988-A806-8FD82A20EAF4}
+		{18A6A632-F8C3-4BD7-8BCF-00E84866A1BF} = {E6A5DC8C-9D16-4988-A806-8FD82A20EAF4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F914D0F2-6FBD-4E44-AF79-AAB0CABCF616}

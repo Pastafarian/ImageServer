@@ -2,8 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ImageServer.Application.Config;
-using ImageServer.Application.Handlers.Query.GetImage.ImageSavingStrategy;
-using ImageServer.Application.Requests;
 using MediatR;
 
 namespace ImageServer.Application.Handlers.Query.GetImage
@@ -24,30 +22,48 @@ namespace ImageServer.Application.Handlers.Query.GetImage
         {
             private readonly AppSettings _appSettings;
             private readonly GetImageRequestValidator _getImageRequestValidator;
-            private readonly IGetImageService _getImageService;
-            private readonly IImageSavingStrategy _imageSavingStrategy;
+            private readonly IImageService _imageService;
+            private readonly IImageCachingService _imageCachingService;
+            private readonly IImageProcessor _imageProcessor;
 
-            public Handler(AppSettings appSettings, GetImageRequestValidator getImageRequestValidator, IGetImageService getImageService, IImageSavingStrategy imageSavingStrategy)
+            public Handler(AppSettings appSettings, GetImageRequestValidator getImageRequestValidator, IImageService imageService, 
+                IImageCachingService imageCachingService, IImageProcessor imageProcessor)
             {
                 _appSettings = appSettings;
                 _getImageRequestValidator = getImageRequestValidator;
-                _getImageService = getImageService;
-                _imageSavingStrategy = imageSavingStrategy;
+                _imageService = imageService;
+                _imageCachingService = imageCachingService;
+                _imageProcessor = imageProcessor;
             }
 
             public async Task<ImageResponse> Handle(Query query, CancellationToken cancellationToken)
             {
                 var validationResult = await _getImageRequestValidator.ValidateAsync(query.Request, cancellationToken);
 
-                if (!validationResult.IsValid) return ImageResponse.GetResponse(ResponseType.BadRequest, validationResult.ToString());
-                
-                var filePath = $"{_appSettings.ProductImagesPath}{query.Request.FileName}";
+                if (!validationResult.IsValid)
+                {
+                    return ImageResponse.GetResponse(ResponseType.BadRequest, validationResult.ToString());
+                }
 
-                if (!_getImageService.FileExists(filePath)) return ImageResponse.GetResponse(ResponseType.NotFound);
+                var imageInCache = _imageCachingService.TryGetValue(query.Request, out var imageResponse);
+
+                if (imageInCache)
+                {
+                    return imageResponse;
+                }
+
+                if (!_imageService.FileExists($"{_appSettings.ProductImagesPath}{query.Request.FileName}"))
+                {
+                    return ImageResponse.GetResponse(ResponseType.NotFound);
+                }
                 
                 try
                 {
-                    return await GetImageResponse(query, filePath, cancellationToken);
+                    imageResponse = await _imageProcessor.GetProcessedImage(query.Request, cancellationToken);
+                    
+                    _imageCachingService.Set(query.Request, imageResponse);
+
+                    return imageResponse;
                     
                 }
                 catch (Exception)
@@ -55,17 +71,8 @@ namespace ImageServer.Application.Handlers.Query.GetImage
                     return ImageResponse.GetResponse(ResponseType.ServerError);
                 }
             }
-
-            private async Task<ImageResponse> GetImageResponse(Query query, string filePath, CancellationToken cancellationToken)
-            {
-                var image = await _getImageService.LoadImage(filePath, cancellationToken);
-                _getImageService.ConstrainSize(image, query.Request);
-                _getImageService.SetBackgroundColor(image, query.Request);
-                _getImageService.SetWaterMark(image, query.Request);
-                var imageBytes = await _imageSavingStrategy.SaveImage(image, query.Request.ImageFileType, cancellationToken);
-                return ImageResponse.GetResponse(ResponseType.Ok, imageBytes);
-            }
         }
     }
+
 }
 
