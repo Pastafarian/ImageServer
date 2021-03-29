@@ -38,6 +38,7 @@ namespace ImageServer.Api.UnitTests
         [InlineData("imagefile.png", 200, 200, "invalidhex", false)] // Background must be valid hex
         [InlineData("", 200, 200, "#000000", false)] // Must have file name
         [InlineData("imagefile.png", 200,200, "#000000", true)]
+        [InlineData("imagefile.png", 200, 200, "#32a852", true)]
         public async Task GetImage_ValidatesRequest(string fileName, int? maxWith, int? maxHeight, string backgroundColor, bool isValid)
         {
             // Arrange
@@ -59,6 +60,7 @@ namespace ImageServer.Api.UnitTests
                 Assert.True(result.ResponseType == ResponseType.BadRequest);
             }
         }
+
 
 
         [Fact]

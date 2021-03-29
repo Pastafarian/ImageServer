@@ -24,7 +24,9 @@ namespace ImageServer.Api.IntTests
 
             var appSettings = new AppSettings
             {
-                ProductImagesPath = @"C:\Assets\product_images\\"
+                ProductImagesPath = @"C:\Assets\product_images\\",
+                CacheExpiryInHours = 24,
+                MaximumCacheSizeInKb = 10485760
             };
 
             serviceCollection.AddSingleton(appSettings);

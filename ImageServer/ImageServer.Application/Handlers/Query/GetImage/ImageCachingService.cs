@@ -1,4 +1,5 @@
 ﻿using System;
+using ImageServer.Application.Config;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace ImageServer.Application.Handlers.Query.GetImage
@@ -6,10 +7,12 @@ namespace ImageServer.Application.Handlers.Query.GetImage
     public class ImageCachingService : IImageCachingService
     {
         private readonly IMemoryCache _memoryCache;
+        private readonly AppSettings _appSettings;
 
-        public ImageCachingService(IMemoryCache memoryCache)
+        public ImageCachingService(IMemoryCache memoryCache, AppSettings appSettings)
         {
             _memoryCache = memoryCache;
+            _appSettings = appSettings;
         }
         public bool TryGetValue(GetImageRequest request, out ImageResponse imageResponse)
         {
@@ -20,7 +23,7 @@ namespace ImageServer.Application.Handlers.Query.GetImage
         {
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetSize(imageResponse.Content.Length / 1024)
-                .SetSlidingExpiration(TimeSpan.FromHours(24));
+                .SetSlidingExpiration(TimeSpan.FromHours(_appSettings.CacheExpiryInHours));
 
             _memoryCache.Set(request, imageResponse, cacheEntryOptions);
         }
