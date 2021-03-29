@@ -4,7 +4,6 @@
     {
         Ok,
         NotFound,
-        BadRequest,
-        ServerError
+        BadRequest
     }
 }

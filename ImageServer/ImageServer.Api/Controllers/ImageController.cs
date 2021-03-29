@@ -27,9 +27,6 @@ namespace ImageServer.Api.Controllers
             if (result.ResponseType == ResponseType.NotFound) 
                 return NotFound();
 
-            if (result.ResponseType == ResponseType.ServerError) 
-                return StatusCode(500);
-
             return File(result.Content, result.ContentType);
         }
     }

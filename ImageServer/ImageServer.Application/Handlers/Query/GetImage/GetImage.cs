@@ -57,19 +57,11 @@ namespace ImageServer.Application.Handlers.Query.GetImage
                     return ImageResponse.GetResponse(ResponseType.NotFound);
                 }
                 
-                try
-                {
-                    imageResponse = await _imageProcessor.GetProcessedImage(query.Request, cancellationToken);
-                    
-                    _imageCachingService.Set(query.Request, imageResponse);
+                imageResponse = await _imageProcessor.GetProcessedImage(query.Request, cancellationToken);
+                
+                _imageCachingService.Set(query.Request, imageResponse);
 
-                    return imageResponse;
-                    
-                }
-                catch (Exception)
-                {
-                    return ImageResponse.GetResponse(ResponseType.ServerError);
-                }
+                return imageResponse;
             }
         }
     }

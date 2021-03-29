@@ -77,20 +77,6 @@ namespace ImageServer.Api.UnitTests
             Assert.Equal(ResponseType.NotFound, result.ResponseType);
         }
 
-        [Fact]
-        public async Task GetImage_WhenExceptionThrownLoadingImage_BadRequestReturned()
-        {
-            // Arrange
-            var request = GetValidRequest();
-            _mockImageProcessor.Setup(x => x.GetProcessedImage(It.IsAny<GetImageRequest>(), It.IsAny<CancellationToken>())).Throws(new Exception());
-            
-            // Act
-            var result = await _sut.Handle(new GetImage.Query(request), CancellationToken.None);
-
-            // Assert
-            Assert.Equal(ResponseType.ServerError, result.ResponseType);
-        }
-
         private static GetImageRequest GetValidRequest()
         {
             return new()
